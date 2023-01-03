@@ -18,7 +18,7 @@
 #include "lmic/lmic.h"
 #include "ttn_logging.h"
 #include "ttn_provisioning.h"
-#include "Display.h"
+//#include "Display.h"
 
 #define TAG "ttn"
 
