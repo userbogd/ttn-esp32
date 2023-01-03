@@ -22,8 +22,6 @@
 #include "driver/timer.h"
 #include "esp_timer.h"
 #include "esp_log.h"
-#include "PortExtender.h"
-
 
 #define LMIC_UNUSED_PIN 0xff
 #define VIRTUAL_EXTENDER_PIN 0xfe
@@ -43,6 +41,12 @@ typedef enum
 } wait_kind_e;
 
 esp_err_t spi_device_polling_transmit_synchronized(spi_device_handle_t handle, spi_transaction_t *trans_desc);
+
+static void (*lora_reset)(uint8_t level) = NULL;
+void RegLoraReset(void (*lora_rst)(uint8_t level))
+{
+    lora_reset = lora_rst;
+}
 
 static void lmic_background_task(void *pvParameter);
 static void qio_irq_handler(void *arg);
@@ -152,23 +156,17 @@ void hal_pin_rxtx(u1_t val)
 
 void hal_pin_rst(u1_t val)
 {
-    if (val == 0)
-        SetLORA_RST(0);
-    else
-        SetLORA_RST(1);
-    return;
+    if (lora_reset)
+    {
+        if (val == 0)
+            lora_reset(0);
+        else
+            lora_reset(1);
+        return;
+    }
 
     if (pin_rst == LMIC_UNUSED_PIN)
         return;
-
-    else if (pin_rst == -1)
-    {
-        if (val == 0)
-            SetLORA_RST(0);
-        else
-            SetLORA_RST(1);
-        return;
-    }
 
     if (val == 0 || val == 1)
     {

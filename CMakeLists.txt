@@ -8,7 +8,7 @@ set(COMPONENT_ADD_INCLUDEDIRS
     "include"
 )
 set(COMPONENT_REQUIRES
-    nvs_flash PortExtender webguiapp
+    nvs_flash webguiapp
 )
 
 register_component()

@@ -32,7 +32,7 @@ void hal_esp32_enter_critical_section(void);
 void hal_esp32_leave_critical_section(void);
 
 void hal_esp32_set_rssi_cal(int8_t rssi_cal);
-
+void RegLoraReset(void (*lora_rst)(uint8_t level));
 
 #ifdef __cplusplus
 }
