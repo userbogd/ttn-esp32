@@ -5,7 +5,7 @@ set(COMPONENT_SRCDIRS
     "src/lmic"
 )
 set(COMPONENT_ADD_INCLUDEDIRS
-    "include"
+    "include" "src/hal"
 )
 set(COMPONENT_REQUIRES
     nvs_flash webguiapp
