@@ -8,7 +8,7 @@ set(COMPONENT_ADD_INCLUDEDIRS
     "include" "src/hal"
 )
 set(COMPONENT_REQUIRES
-    nvs_flash webguiapp
+    nvs_flash
 )
 
 register_component()
