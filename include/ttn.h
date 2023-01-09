@@ -705,6 +705,9 @@ extern "C"
     bool ttn_is_connected(void);
     void ttn_rejoin(void);
 
+    void RegLoraWriteDisplay(void (*lora_wr_disp)(char *str, int strnum));
+    void RegLoraUpdateDisplay(void (*lora_upd_disp)(void));
+
 #ifdef __cplusplus
 }
 #endif

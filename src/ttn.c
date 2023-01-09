@@ -18,7 +18,20 @@
 #include "lmic/lmic.h"
 #include "ttn_logging.h"
 #include "ttn_provisioning.h"
-//#include "Display.h"
+
+#define  LMIC_DISPLAY_ENABLED 1
+
+static void (*lora_write_dispaly)(char *str, int strnum) = NULL;
+void RegLoraWriteDisplay(void (*lora_wr_disp)(char *str, int strnum))
+{
+    lora_write_dispaly = lora_wr_disp;
+}
+
+static void (*lora_update_dispaly)(void) = NULL;
+void RegLoraUpdateDisplay(void (*lora_upd_disp)(void))
+{
+    lora_update_dispaly = lora_upd_disp;
+}
 
 #define TAG "ttn"
 
@@ -442,36 +455,39 @@ void event_callback(void *user_data, ev_t event)
     LMIC_DEBUG_PRINTF("%"LMIC_PRId_ostime_t": engineUpdate, opmode=0x%x\n", os_getTime(), LMIC.opmode);
 #endif
 
-#if LMIC_DISPLAY_ENABLED == 1
+#if LMIC_DISPLAY_ENABLED
     //Debug display info
-    char dispStr[24];
-    u2_t op;
-    hal_esp32_enter_critical_section();
-    op = LMIC.opmode;
-    hal_esp32_leave_critical_section();
-    sprintf(dispStr, (char*) event_names[event]);
-    sprintf(dispStr + strlen(dispStr), " 0x%x", op);
-    WriteDisplay(dispStr, 5);
-    if (event == EV_TXSTART)
+    if (lora_update_dispaly && lora_write_dispaly)
     {
-        ResetSeconds();
-        sprintf(dispStr, "%s:%.1fMHz SF%d", "TX", LMIC.freq / 1000000.0, getSf(LMIC.rps) + 6);
-        WriteDisplay(dispStr, 6);
-        sprintf(dispStr, "POWER:%+ddBm DR%d", LMIC.radio_txpow, LMIC.datarate);
-        WriteDisplay(dispStr, 7);
+        char dispStr[24];
+        u2_t op;
+        hal_esp32_enter_critical_section();
+        op = LMIC.opmode;
+        hal_esp32_leave_critical_section();
+        sprintf(dispStr, (char*) event_names[event]);
+        sprintf(dispStr + strlen(dispStr), " 0x%x", op);
+        lora_write_dispaly(dispStr, 5);
+        if (event == EV_TXSTART)
+        {
+            ResetSeconds();
+            sprintf(dispStr, "%s:%.1fMHz SF%d", "TX", LMIC.freq / 1000000.0, getSf(LMIC.rps) + 6);
+            lora_write_dispaly(dispStr, 6);
+            sprintf(dispStr, "POWER:%+ddBm DR%d", LMIC.radio_txpow, LMIC.datarate);
+            lora_write_dispaly(dispStr, 7);
+        }
+        else if (event == EV_RXSTART)
+        {
+            sprintf(dispStr, "%s:%.1fMHz SF%d", "RX", LMIC.freq / 1000000.0, getSf(LMIC.rps) + 6);
+            lora_write_dispaly(dispStr, 6);
+            lora_write_dispaly(" ", 7);
+        }
+        else if (event == EV_TXCOMPLETE)
+        {
+            sprintf(dispStr, "RSSI:%+ddBm SNR:%+ddB", LMIC.rssi - RSSI_OFF, LMIC.snr / 4);
+            lora_write_dispaly(dispStr, 7);
+        }
+        lora_update_dispaly();
     }
-    else if (event == EV_RXSTART)
-    {
-        sprintf(dispStr, "%s:%.1fMHz SF%d", "RX", LMIC.freq / 1000000.0, getSf(LMIC.rps) + 6);
-        WriteDisplay(dispStr, 6);
-        WriteDisplay(" ", 7);
-    }
-    else if (event == EV_TXCOMPLETE)
-    {
-        sprintf(dispStr, "RSSI:%+ddBm SNR:%+ddB", LMIC.rssi - RSSI_OFF, LMIC.snr / 4);
-        WriteDisplay(dispStr, 7);
-    }
-    UpdateDisplay();
 #endif
 
     ttn_event_t ttn_event = TTN_EVENT_NONE;
