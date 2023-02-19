@@ -9,6 +9,12 @@ set(COMPONENT_ADD_INCLUDEDIRS
 )
 set(COMPONENT_REQUIRES
     nvs_flash
+    driver
+    mbedtls
+    esp_event
+    esp_timer
+    esp_hw_support
+    "log"
 )
 
 register_component()
