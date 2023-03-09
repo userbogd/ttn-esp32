@@ -19,6 +19,7 @@
 #include "hal/hal_esp32.h"
 #include "lmic/lmic.h"
 #include "nvs_flash.h"
+#include "esp_mac.h"
 
 #if defined(TTN_HAS_AT_COMMANDS)
 #define UART_NUM CONFIG_TTN_PROVISION_UART_NUM
