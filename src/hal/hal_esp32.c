@@ -22,6 +22,7 @@
 #include "driver/timer.h"
 #include "esp_timer.h"
 #include "esp_log.h"
+#include "esp_rom_gpio.h"
 
 #define LMIC_UNUSED_PIN 0xff
 #define VIRTUAL_EXTENDER_PIN 0xfe
