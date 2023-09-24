@@ -469,7 +469,7 @@ void event_callback(void *user_data, ev_t event)
         lora_write_dispaly(dispStr, 5);
         if (event == EV_TXSTART)
         {
-            ResetSeconds();
+            //ResetSeconds();
             sprintf(dispStr, "%s:%.1fMHz SF%d", "TX", LMIC.freq / 1000000.0, getSf(LMIC.rps) + 6);
             lora_write_dispaly(dispStr, 6);
             sprintf(dispStr, "POWER:%+ddBm DR%d", LMIC.radio_txpow, LMIC.datarate);
